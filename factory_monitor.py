@@ -2,23 +2,24 @@ import time
 import random
 from datetime import datetime
 
+# Global Variable Definition
 DOWNTIME_COST_PER_MINUTE = 500.00
 
 def run_factory_shift():
-    total_cycles = 3
     successful_cycles = 0
     total_revenue_loss = 0.0
 
     print("=========================================")
     print(" LAUNCHING LIVE INDUSTRIAL MONITORING SPRINT ")
+    print("   [Type 'STOP' at the prompt to shut down]   ")
     print("=========================================\n")
 
-    for i in range(total_cycles):
+    while True:
         machine_id = "CNC_Assembly_Robot_1"
         temperature = random.randint(50, 110)
         voltage = random.uniform(220.0, 245.0)
 
-        print(f"[{i+1}/{total_cycles}] Querying Sensor Array: {machine_id}")
+        print(f"\nQuerying Sensor Array: {machine_id}")
         print(f" Voltage: {voltage:.2f}V | Temperature: {temperature}°C")
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -47,6 +48,16 @@ def run_factory_shift():
                 log_file.write(log_message)
 
         print("-" * 50)
-        time.sleep(1)
+
+        operator_command = input("Press ENTER to run next cycle, or type 'STOP' to exit shift: ")
+
+        if operator_command.upper() == "STOP":
+            print("\n=========================================")
+            print("   ⚠️ SHUTDOWN COMMAND DETECTED ⚠️   ")
+            print(f" Total Operational Loss: £{total_revenue_loss:,.2f}")
+            print(f" Total Successful Machine Cycles: {successful_cycles}")
+            print(" Exiting monitoring mode safely. Goodbye.")
+            print("=========================================")
+            break
 
 run_factory_shift()
