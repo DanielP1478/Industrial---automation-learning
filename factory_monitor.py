@@ -5,6 +5,9 @@ from datetime import datetime
 
 DOWNTIME_COST_PER_MINUTE = 500.00
 
+# ⏱️ RECORD SYSTEM BOOT TIME TIMESTAMP
+SYSTEM_BOOT_TIME = time.time()
+
 system_thresholds = {
     "max_temp": 100,
     "min_voltage": 225.0
@@ -15,6 +18,14 @@ shift_metrics = {
     "highest_volt": None, "lowest_volt": None,
     "total_scans": 0
 }
+
+def calculate_uptime():
+    """Calculates active running runtime duration metrics since initial boot"""
+    total_seconds = int(time.time() - SYSTEM_BOOT_TIME)
+    hours = total_seconds // 3600
+    minutes = (total_seconds % 3600) // 60
+    seconds = total_seconds % 60
+    return f"{hours}h {minutes}m {seconds}s"
 
 def update_shift_analytics(temp, volt):
     shift_metrics["total_scans"] += 1
@@ -34,31 +45,28 @@ def check_sensors_once():
 
     update_shift_analytics(temperature, voltage)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    status_code = "[OK-200]"  # Default industry nominal state code
+    status_code = "[OK-200]"
     log_message = ""
 
     if temperature > system_thresholds["max_temp"]:
-        status_code = "[ERR-500]"  # Critical Hardware Thermal Fault Code
+        status_code = "[ERR-500]"
         loss = 15 * DOWNTIME_COST_PER_MINUTE
         log_message = f"[{timestamp}] {status_code} CRITICAL: Overheating ({temperature}°C). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT {status_code}: High Thermal Limit Exceeded! Loss: £{loss:,.2f}")
     elif voltage < system_thresholds["min_voltage"]:
-        status_code = "[WARN-404]"  # Line Voltage Drop Warning Code
+        status_code = "[WARN-404]"
         loss = 5 * DOWNTIME_COST_PER_MINUTE
         log_message = f"[{timestamp}] {status_code} WARNING: Voltage Drop ({voltage:.2f}V). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT {status_code}: Low Line Voltage Instability! Loss: £{loss:,.2f}")
     else:
-        # ❤️ Silent system heartbeat signal confirmation text
         print(f" STATUS: {status_code} - Sensor Node Active. Status: Nominal.")
 
+    if log_message:
+        with open("machine_errors.log", "a") as log_file:
+            log_file.write(log_message)
 
-        if log_message:
-             with open("machine_errors.log", "a") as log_file:
-                    log_file.write(log_message)
-
-# Always log the operational heartbeat data block for external database audits
-        with open("heartbeat.log", "a") as hb_file:
-            hb_file.write(f"[{timestamp}] NODE_OK | CODE: {status_code} | T: {temperature}°C | V: {voltage:.2f}V\n")
+    with open("heartbeat.log", "a") as hb_file:
+        hb_file.write(f"[{timestamp}] NODE_OK | CODE: {status_code} | T: {temperature}°C | V: {voltage:.2f}V\n")
 
 def run_autonomous_loop():
     print("\n==========================================")
@@ -77,6 +85,7 @@ def display_shift_analytics():
     print("\n==========================================")
     print("      FACTORY SHIFT ANALYTICS REPORT      ")
     print("==========================================")
+    print(f" System Active Node Uptime: {calculate_uptime()} [NEW]")
     print(f" Total Active Sensor Queries Executed: {shift_metrics['total_scans']}")
     print("------------------------------------------")
     if shift_metrics["total_scans"] > 0:
@@ -110,6 +119,9 @@ def update_threshold_limits():
 def launch_control_panel():
     while True:
         print("\n=== SCADA MASTER CONTROL PANEL ===")
+        # ⏱️ Active runtime clock visible straight on the main panel header interface
+        print(f" Node Runtime Status: {calculate_uptime()}")
+        print("----------------------------------")
         print(" 1. Manual Single Telemetry Check")
         print(" 2. Launch Continuous Autonomous Mode")
         print(" 3. Print Shift Performance Analytics")
