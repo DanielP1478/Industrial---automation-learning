@@ -4,8 +4,6 @@ import os
 from datetime import datetime
 
 DOWNTIME_COST_PER_MINUTE = 500.00
-
-# ⏱️ RECORD SYSTEM BOOT TIME TIMESTAMP
 SYSTEM_BOOT_TIME = time.time()
 
 system_thresholds = {
@@ -16,19 +14,30 @@ system_thresholds = {
 shift_metrics = {
     "highest_temp": None, "lowest_temp": None,
     "highest_volt": None, "lowest_volt": None,
-    "total_scans": 0
+    "total_scans": 0,
+    "nominal_scans": 0  # 📊 NEW: Tracks clean loops to calculate efficiency percentages
 }
 
 def calculate_uptime():
-    """Calculates active running runtime duration metrics since initial boot"""
     total_seconds = int(time.time() - SYSTEM_BOOT_TIME)
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
     seconds = total_seconds % 60
     return f"{hours}h {minutes}m {seconds}s"
 
-def update_shift_analytics(temp, volt):
+def calculate_efficiency():
+    """NEW: Computes the asset's live operational health rating as a percentage"""
+    if shift_metrics["total_scans"] == 0:
+        return 100.0
+    # Math: (Clean Scans / Total Scans) * 100
+    score = (shift_metrics["nominal_scans"] / shift_metrics["total_scans"]) * 100
+    return score
+
+def update_shift_analytics(temp, volt, is_nominal):
     shift_metrics["total_scans"] += 1
+    if is_nominal:
+        shift_metrics["nominal_scans"] += 1
+
     if shift_metrics["highest_temp"] is None or temp > shift_metrics["highest_temp"]:
         shift_metrics["highest_temp"] = temp
     if shift_metrics["lowest_temp"] is None or temp < shift_metrics["lowest_temp"]:
@@ -43,23 +52,27 @@ def check_sensors_once():
     temperature = random.randint(50, 110)
     voltage = random.uniform(220.0, 245.0)
 
-    update_shift_analytics(temperature, voltage)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     status_code = "[OK-200]"
     log_message = ""
-
+    is_nominal = True
     if temperature > system_thresholds["max_temp"]:
         status_code = "[ERR-500]"
+        is_nominal = False
         loss = 15 * DOWNTIME_COST_PER_MINUTE
         log_message = f"[{timestamp}] {status_code} CRITICAL: Overheating ({temperature}°C). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT {status_code}: High Thermal Limit Exceeded! Loss: £{loss:,.2f}")
     elif voltage < system_thresholds["min_voltage"]:
         status_code = "[WARN-404]"
+        is_nominal = False
         loss = 5 * DOWNTIME_COST_PER_MINUTE
         log_message = f"[{timestamp}] {status_code} WARNING: Voltage Drop ({voltage:.2f}V). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT {status_code}: Low Line Voltage Instability! Loss: £{loss:,.2f}")
     else:
         print(f" STATUS: {status_code} - Sensor Node Active. Status: Nominal.")
+
+    # Pass the health state parameter straight to the math tracking compiler
+    update_shift_analytics(temperature, voltage, is_nominal)
 
     if log_message:
         with open("machine_errors.log", "a") as log_file:
@@ -85,8 +98,10 @@ def display_shift_analytics():
     print("\n==========================================")
     print("      FACTORY SHIFT ANALYTICS REPORT      ")
     print("==========================================")
-    print(f" System Active Node Uptime: {calculate_uptime()} [NEW]")
-    print(f" Total Active Sensor Queries Executed: {shift_metrics['total_scans']}")
+    print(f" Node Runtime Uptime Clock : {calculate_uptime()}")
+    print(f" Total Sensor Queries Run  : {shift_metrics['total_scans']}")
+    # Displays the clean compiled mathematical productivity rating score
+    print(f" Asset Operational Health  : {calculate_efficiency():.1f}% Efficiency")
     print("------------------------------------------")
     if shift_metrics["total_scans"] > 0:
         print(f" Temperature -> Max High: {shift_metrics['highest_temp']}°C | Min Low: {shift_metrics['lowest_temp']}°C")
@@ -94,16 +109,15 @@ def display_shift_analytics():
     else:
         print(" No metrics accumulated yet.")
     print("==========================================\n")
-
 def display_historical_logs():
-    print("\n--- RETRIEVING HISTORICAL FAULT LOGS ---")
-    if os.path.exists("machine_errors.log"):
-        with open("machine_errors.log", "r") as log_file:
-            for record in log_file.readlines()[-10:]:
-                print(record.strip())
-    else:
-        print("No machine_errors.log file found on disk.")
-    print("----------------------------------------\n")
+        print("\n--- RETRIEVING HISTORICAL FAULT LOGS ---")
+        if os.path.exists("machine_errors.log"):
+            with open("machine_errors.log", "r") as log_file:
+                for record in log_file.readlines()[-10:]:
+                    print(record.strip())
+        else:
+            print("No machine_errors.log file found on disk.")
+        print("----------------------------------------\n")
 
 def update_threshold_limits():
     print("\n--- CONFIGURE SAFETY BOUNDARIES ---")
@@ -118,9 +132,9 @@ def update_threshold_limits():
 
 def launch_control_panel():
     while True:
+        # 📊 Dynamic performance metrics directly on the console's live dashboard header display
         print("\n=== SCADA MASTER CONTROL PANEL ===")
-        # ⏱️ Active runtime clock visible straight on the main panel header interface
-        print(f" Node Runtime Status: {calculate_uptime()}")
+        print(f" Node Uptime: {calculate_uptime()} | Health Rating: {calculate_efficiency():.1f}%")
         print("----------------------------------")
         print(" 1. Manual Single Telemetry Check")
         print(" 2. Launch Continuous Autonomous Mode")
