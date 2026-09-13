@@ -10,3 +10,4 @@
 [2026-09-12 19:03:40] WARNING: CNC_Assembly_Robot_1 Voltage Drop (224.33V). Loss: £2,500.00
 [2026-09-13 16:31:19] WARNING: CNC_Assembly_Robot_1 Voltage Drop (220.89V). Limit: 225.0V. Loss: £2,500.00
 [2026-09-13 16:31:54] CRITICAL: CNC_Assembly_Robot_1 Overheating (107°C). Limit: 70°C. Loss: £7,500.00
+[2026-09-13 16:40:23] CRITICAL: CNC_Assembly_Robot_1 Overheating (107°C). Loss: £7,500.00

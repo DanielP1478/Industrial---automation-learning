@@ -5,31 +5,31 @@ from datetime import datetime
 
 DOWNTIME_COST_PER_MINUTE = 500.00
 
-# Dynamic threshold tracker parameters
+# Dynamic threshold tracking parameters
 system_thresholds = {
     "max_temp": 100,
     "min_voltage": 225.0
 }
 
-def run_sensor_query():
+def check_sensors_once():
+    """Runs a single live query check and returns true if an error logged"""
     machine_id = "CNC_Assembly_Robot_1"
     temperature = random.randint(50, 110)
     voltage = random.uniform(220.0, 245.0)
 
-    print(f"\n[LIVE QUERY] Asset: {machine_id}")
+    print(f"\n[TELEMETRY SCAN] Asset: {machine_id}")
     print(f" Voltage: {voltage:.2f}V | Temperature: {temperature}°C")
-    print(f" [Active Rules] Max Temp: {system_thresholds['max_temp']}°C | Min Volt: {system_thresholds['min_voltage']}V")
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_message = ""
 
     if temperature > system_thresholds["max_temp"]:
         loss = 15 * DOWNTIME_COST_PER_MINUTE
-        log_message = f"[{timestamp}] CRITICAL: {machine_id} Overheating ({temperature}°C). Limit: {system_thresholds['max_temp']}°C. Loss: £{loss:,.2f}\n"
+        log_message = f"[{timestamp}] CRITICAL: {machine_id} Overheating ({temperature}°C). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT: High Thermal Threshold Exceeded! Loss: £{loss:,.2f}")
     elif voltage < system_thresholds["min_voltage"]:
         loss = 5 * DOWNTIME_COST_PER_MINUTE
-        log_message = f"[{timestamp}] WARNING: {machine_id} Voltage Drop ({voltage:.2f}V). Limit: {system_thresholds['min_voltage']}V. Loss: £{loss:,.2f}\n"
+        log_message = f"[{timestamp}] WARNING: {machine_id} Voltage Drop ({voltage:.2f}V). Loss: £{loss:,.2f}\n"
         print(f" ⚠️ ALERT: Low Line Voltage Stability Warning! Loss: £{loss:,.2f}")
     else:
         print(" ✅ Status: Nominal. Output optimal.")
@@ -37,7 +37,23 @@ def run_sensor_query():
     if log_message:
         with open("machine_errors.log", "a") as log_file:
             log_file.write(log_message)
-    print("-" * 50)
+    print("-" * 40)
+
+def run_autonomous_loop():
+    """NEW: Runs a continuous automated scan loop until the user breaks it"""
+    print("\n==========================================")
+    print("   LAUNCHING AUTONOMOUS MONITORING MODE   ")
+    print("   [Press Ctrl + C to exit back to menu]  ")
+    print("==========================================\n")
+    time.sleep(1.5)
+
+    try:
+        while True:
+            check_sensors_once()
+            # ⏱️ Pauses the script for 2 seconds before automatically scanning again
+            time.sleep(2) 
+    except KeyboardInterrupt:
+        print("\n[INFO] Autonomous mode suspended by operator.")
 
 def display_historical_logs():
     print("\n--- RETRIEVING HISTORICAL FAULT LOGS ---")
@@ -70,28 +86,32 @@ def update_threshold_limits():
 def launch_control_panel():
     while True:
         print("\n=== SCADA MASTER CONTROL PANEL ===")
-        print(" 1. Execute Live Machine Telemetry Pass")
-        print(" 2. Print Saved Historical Fault Logs")
-        print(" 3. Adjust Safety Threshold Parameters")
-        print(" 4. Safe System Shutdown & Exit")
+        print(" 1. Manual Single Telemetry Check")
+        print(" 2. Launch Continuous Autonomous Mode [NEW]")
+        print(" 3. Print Saved Historical Fault Logs")
+        print(" 4. Adjust Safety Threshold Parameters")
+        print(" 5. Safe System Shutdown & Exit")
         print("==================================")
 
-        user_choice = input("Enter option (1-4): ")
+        user_choice = input("Enter option (1-5): ")
 
         if user_choice == "1":
-            run_sensor_query()
+            check_sensors_once()
             input("Press ENTER to return to menu...")
         elif user_choice == "2":
-            display_historical_logs()
+            run_autonomous_loop()
             input("Press ENTER to return to menu...")
         elif user_choice == "3":
-            update_threshold_limits()
+            display_historical_logs()
             input("Press ENTER to return to menu...")
         elif user_choice == "4":
+            update_threshold_limits()
+            input("Press ENTER to return to menu...")
+        elif user_choice == "5":
             print("\nShutting down SCADA network tracking... Goodbye.")
             break
         else:
-            print("\n❌ INVALID CHOICE. Input 1-4.")
+            print("\n❌ INVALID CHOICE. Input 1-5.")
             time.sleep(1)
 
 if __name__ == "__main__":
