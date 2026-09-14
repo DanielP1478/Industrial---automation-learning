@@ -1,112 +1,78 @@
 import streamlit as st
-import random
-import time
-import requests
-from datetime import datetime
+import pandas as pd
+import numpy as np
+import datetime
+import plotly.graph_objects as go
 
-# Set up page configurations dynamically
-st.set_page_config(page_title="SCADA Cloud Sync", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="Enterprise SCADA Fleet Monitoring Center", layout="wide")
 
-# Initialize robust background persistent storage session state memory blocks
-if "total_scans" not in st.session_state:
-    st.session_state.total_scans = 0
-    st.session_state.nominal_scans = 0
-    st.session_state.max_temp_limit = 100
-    st.session_state.current_temp = 72
-    st.session_state.current_volt = 230.0
-    st.session_state.status_code = "[OK-200]"
-    st.session_state.alert_type = "nominal"
-    st.session_state.history_records = []  # 📊 Keeps track of historical rows table list data entries
+st.markdown("""
+<style>
+    .metric-card { background-color: #161A22; border: 1px solid #2D3748; padding: 15px; border-radius: 8px; }
+    .fault-critical { background-color: #3C1A1A; border-left: 5px solid #E53E3E; padding: 12px; color: #FED7D7; font-weight: bold; }
+    .status-normal { color: #48BB78; font-weight: bold; }
+    .status-fault { color: #E53E3E; font-weight: bold; }
+</style>
+""", unsafe_allow_html=True)
 
-def fire_cloud_sync_api(temp, volt, status):
-    """Simulates a secure high-availability cloud sync connection bypass"""
-    try:
-        # Simulates a tiny, realistic 0.2-second network latency transfer delay
-        time.sleep(0.2)
+if 'fault_cleared' not in st.session_state: st.session_state.fault_cleared = False
+if 'clear_timestamp' not in st.session_state: st.session_state.clear_timestamp = None
 
-        # Returns a perfect, verified confirmation response tag
-        return "✅ Cloud Sync Success (HTTP 200)"
+@st.cache_data
+def generate_historical_telemetry():
+    now = datetime.datetime.now()
+    timestamps = pd.date_range(end=now, periods=60, freq='min')
+    return pd.DataFrame({
+        'Timestamp': timestamps,
+        'CNC_Mill_Temp_C': np.random.normal(loc=72, scale=3, size=60),
+        'Industrial_Freezer_Temp_C': np.random.normal(loc=-18, scale=1.5, size=60),
+        'Conveyor_Belt_Speed_ms': np.random.normal(loc=1.5, scale=0.1, size=60)
+    })
 
-    except Exception:
-        return "❌ Network Fault: Remote Connection Failed"
+data_stream = generate_historical_telemetry()
+latest_metrics = data_stream.iloc[-1]
 
-# 🖥️ MASTER VISUAL DASHBOARD UI
-st.title("⚡ Enterprise Industrial SCADA Cloud Portal")
-st.markdown("---")
+st.sidebar.title("🎛️ Fleet Control Panel")
+safety_threshold = st.sidebar.slider("Critical Temperature Threshold (°C)", 60, 100, 85)
 
-# Screen Architecture: Split display into asymmetric panels
-col_left, col_right = st.columns([2, 1])
+st.title("🏭 Enterprise SCADA Fleet Monitoring Center")
+st.caption(f"Environment: Python 3.14 Compliance | Ref Time: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-with col_right:
-    st.subheader("⚙️ Safety Parameters Configuration")
-    st.session_state.max_temp_limit = st.slider(
-        "Maximum Allowed Temperature Limit (°C)",
-        min_value=60, max_value=120,
-        value=st.session_state.max_temp_limit
-    )
+current_cnc_temp = latest_metrics['CNC_Mill_Temp_C']
+is_breached = current_cnc_temp > safety_threshold
 
-    st.markdown("### Operational Controls")
-    if st.button("🚀 Execute Live Telemetry & Cloud Stream Pass", use_container_width=True):
-        st.session_state.total_scans += 1
-        st.session_state.current_temp = random.randint(50, 110)
-        st.session_state.current_volt = random.uniform(220.0, 245.0)
+if is_breached and not st.session_state.fault_cleared:
+    st.markdown(f"<div class='fault-critical'>🛑 CRITICAL THERMAL FAULT [ERR-500]: Asset breached safety envelope!</div>", unsafe_allow_html=True)
+    if st.button("Acknowledge & Force Clear Latched Fault"):
+        st.session_state.fault_cleared = True
+        st.session_state.clear_timestamp = datetime.datetime.now().strftime('%H:%M:%S')
+        st.sidebar.button("Rerun System")
+elif st.session_state.fault_cleared:
+    st.success(f"✅ Latched Fault Overridden at {st.session_state.clear_timestamp}.")
+    if st.button("Reset System Interlock Latches"):
+        st.session_state.fault_cleared = False
+        st.session_state.clear_timestamp = None
 
-        # Evaluate strict parameters
-        if st.session_state.current_temp > st.session_state.max_temp_limit:
-            st.session_state.status_code = "[ERR-500]"
-            st.session_state.alert_type = "critical"
-            risk = "HIGH"
-        elif st.session_state.current_volt < 225.0:
-            st.session_state.status_code = "[WARN-404]"
-            st.session_state.alert_type = "warning"
-            risk = "MEDIUM"
-        else:
-            st.session_state.status_code = "[OK-200]"
-            st.session_state.alert_type = "nominal"
-            st.session_state.nominal_scans += 1
-            risk = "NONE"
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.markdown("<div class='metric-card'>🤖 CNC Mill Node", unsafe_allow_html=True)
+    st.metric("Core Temp", f"{current_cnc_temp:.2f} °C")
+    st.markdown("</div>", unsafe_allow_html=True)
+with col2:
+    st.markdown("<div class='metric-card'>❄️ Industrial Freezer", unsafe_allow_html=True)
+    st.metric("Internal Temp", f"{latest_metrics['Industrial_Freezer_Temp_C']:.2f} °C")
+    st.markdown("</div>", unsafe_allow_html=True)
+with col3:
+    st.markdown("<div class='metric-card'>📦 Conveyor Subsystem", unsafe_allow_html=True)
+    st.metric("Linear Velocity", f"{latest_metrics['Conveyor_Belt_Speed_ms']:.2f} m/s")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        # 🚀 CRUCIAL STEP: Fire the real network request out to the internet live!
-        sync_result_string = fire_cloud_sync_api(
-            st.session_state.current_temp,
-            st.session_state.current_volt,
-            st.session_state.status_code
-        )
-
-        # Append fresh compiled record entry block into history log list memory array
-        new_row_dictionary = {
-            "Scan_ID": st.session_state.total_scans,
-            "Timestamp": datetime.now().strftime("%H:%M:%S"),
-            "Temperature (°C)": st.session_state.current_temp,
-            "Voltage (V)": f"{st.session_state.current_volt:.2f}",
-            "Risk_Level": risk,
-            "Cloud_Sync_Status": sync_result_string
-        }
-        # Insert at index 0 so new inputs display right at the top row automatically!
-        st.session_state.history_records.insert(0, new_row_dictionary)
-
-with col_left:
-    st.subheader("📊 Real-Time Operations Stream")
-
-    efficiency = (st.session_state.nominal_scans / st.session_state.total_scans * 100) if st.session_state.total_scans > 0 else 100.0
-
-    # Layout Metric Grid Layout Row Block
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Core Temperature Sensor", f"{st.session_state.current_temp} °C")
-    m2.metric("Incoming Line Voltage", f"{st.session_state.current_volt:.2f} V")
-    m3.metric("System OEE Efficiency Score", f"{efficiency:.1f}%")
-
-    st.markdown("### Operational Response Feedback System")
-    if st.session_state.alert_type == "critical":
-        st.error(f"🚨 ALERT {st.session_state.status_code}: Extreme Core Overheating! Tracking automated system mitigation policies.")
-    elif st.session_state.alert_type == "warning":
-        st.warning(f"⚠️ WARNING {st.session_state.status_code}: Unstable phase line voltage drop registered.")
-    else:
-        st.success(f"✅ STATUS {st.session_state.status_code}: System Operational. Node telemetry paths nominal.")
-
-st.markdown("### 🗄️ Historical Transmissions Registry (Live Cloud Audit)")
-if st.session_state.history_records:
-    # Render an interactive visual data matrix table directly onto the web screen layer frame sheet
-    st.dataframe(st.session_state.history_records, use_container_width=True)
-else:
-    st.info("SCADA pipeline log database empty. Press the operational execution button to stream real telemetry entries.")
+view_tab1, view_tab2 = st.tabs(["📊 Live Telemetry Trend Plot", "🗄️ Raw SCADA Data Registers"])
+with view_tab1:
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=data_stream['Timestamp'], y=data_stream['CNC_Mill_Temp_C'], name='CNC Temp'))
+    fig.add_trace(go.Scatter(x=data_stream['Timestamp'], y=data_stream['Industrial_Freezer_Temp_C'], name='Freezer Temp'))
+    fig.update_layout(template="plotly_dark")
+    st.plotly_chart(fig, use_container_width=True)
+with view_tab2:
+    st.dataframe(data_stream)
