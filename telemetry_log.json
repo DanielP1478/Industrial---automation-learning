@@ -1,3 +1,42 @@
 [
     {
-        "Timestamp": 
+        "Timestamp": "2026-09-15 16:44:28",
+        "WalkIn_Freezer_Temp_C": -16.931085005546272,
+        "Display_Counter_Temp_C": 2.9676929961266567
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:31",
+        "WalkIn_Freezer_Temp_C": -19.486911771411364,
+        "Display_Counter_Temp_C": 1.62615782486823
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:31",
+        "WalkIn_Freezer_Temp_C": -17.034920269699267,
+        "Display_Counter_Temp_C": 3.0941014284141644
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:33",
+        "WalkIn_Freezer_Temp_C": -19.59629378053901,
+        "Display_Counter_Temp_C": 1.523645493968185
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:33",
+        "WalkIn_Freezer_Temp_C": -16.742089667191276,
+        "Display_Counter_Temp_C": 3.1565588834850598
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:36",
+        "WalkIn_Freezer_Temp_C": -19.603616066148394,
+        "Display_Counter_Temp_C": 1.5359655972948782
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:38",
+        "WalkIn_Freezer_Temp_C": -19.481119785929735,
+        "Display_Counter_Temp_C": 1.548069327145928
+    },
+    {
+        "Timestamp": "2026-09-15 16:44:38",
+        "WalkIn_Freezer_Temp_C": -16.247728019109374,
+        "Display_Counter_Temp_C": 3.3502937078115176
+    }
+]
