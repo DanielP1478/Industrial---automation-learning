@@ -1,0 +1,142 @@
+[
+    {
+        "Timestamp": "2026-09-17 22:11:12",
+        "WalkIn_Freezer_Temp_C": -19.517031698922477,
+        "Display_Counter_Temp_C": 2.9879597796605806
+    },
+    {
+        "Timestamp": "2026-09-17 22:11:15",
+        "WalkIn_Freezer_Temp_C": -17.760304940505353,
+        "Display_Counter_Temp_C": 0.7717902083929202
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:00",
+        "WalkIn_Freezer_Temp_C": -18.832228880693858,
+        "Display_Counter_Temp_C": 2.604721257724185
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:03",
+        "WalkIn_Freezer_Temp_C": -19.207442035764693,
+        "Display_Counter_Temp_C": 2.5940742430272112
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:05",
+        "WalkIn_Freezer_Temp_C": -19.48139953890423,
+        "Display_Counter_Temp_C": 2.564719982247231
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:07",
+        "WalkIn_Freezer_Temp_C": -19.227134805045402,
+        "Display_Counter_Temp_C": 2.378271120842072
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:09",
+        "WalkIn_Freezer_Temp_C": -19.879192679562966,
+        "Display_Counter_Temp_C": 2.3980503220345395
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:11",
+        "WalkIn_Freezer_Temp_C": -20.094966162796204,
+        "Display_Counter_Temp_C": 2.411028039074663
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:14",
+        "WalkIn_Freezer_Temp_C": -20.215164235209556,
+        "Display_Counter_Temp_C": 2.3735561502957645
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:16",
+        "WalkIn_Freezer_Temp_C": -21.10870382388923,
+        "Display_Counter_Temp_C": 2.423157044884931
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:18",
+        "WalkIn_Freezer_Temp_C": -21.430003857248792,
+        "Display_Counter_Temp_C": 2.4818750335681727
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:20",
+        "WalkIn_Freezer_Temp_C": -21.897891394471937,
+        "Display_Counter_Temp_C": 2.470770910267935
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:22",
+        "WalkIn_Freezer_Temp_C": -21.418086183791903,
+        "Display_Counter_Temp_C": 2.447136817560504
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:24",
+        "WalkIn_Freezer_Temp_C": -21.423218560096135,
+        "Display_Counter_Temp_C": 2.3810570042003953
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:26",
+        "WalkIn_Freezer_Temp_C": -21.159627651028735,
+        "Display_Counter_Temp_C": 2.389406689966977
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:29",
+        "WalkIn_Freezer_Temp_C": -21.270801670597006,
+        "Display_Counter_Temp_C": 2.331359674716579
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:31",
+        "WalkIn_Freezer_Temp_C": -21.731165496669227,
+        "Display_Counter_Temp_C": 2.2731146122986563
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:33",
+        "WalkIn_Freezer_Temp_C": -21.04607026015983,
+        "Display_Counter_Temp_C": 2.3532268637029676
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:35",
+        "WalkIn_Freezer_Temp_C": -20.948278995272496,
+        "Display_Counter_Temp_C": 2.3853761921463312
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:37",
+        "WalkIn_Freezer_Temp_C": -21.01505867077156,
+        "Display_Counter_Temp_C": 2.3541447647802336
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:39",
+        "WalkIn_Freezer_Temp_C": -21.406484568618147,
+        "Display_Counter_Temp_C": 2.1629840448861786
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:41",
+        "WalkIn_Freezer_Temp_C": -22.489504747977314,
+        "Display_Counter_Temp_C": 2.1695198215990597
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:43",
+        "WalkIn_Freezer_Temp_C": -22.864776411360385,
+        "Display_Counter_Temp_C": 2.24905774526642
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:46",
+        "WalkIn_Freezer_Temp_C": -23.773227075663456,
+        "Display_Counter_Temp_C": 2.2382100111296115
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:48",
+        "WalkIn_Freezer_Temp_C": -24.140435735796043,
+        "Display_Counter_Temp_C": 2.2283334764653864
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:50",
+        "WalkIn_Freezer_Temp_C": -24.12666104717211,
+        "Display_Counter_Temp_C": 2.1938612247047393
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:52",
+        "WalkIn_Freezer_Temp_C": -24.333759982865573,
+        "Display_Counter_Temp_C": 2.0726404992512335
+    },
+    {
+        "Timestamp": "2026-09-17 22:14:54",
+        "WalkIn_Freezer_Temp_C": -23.72929200692027,
+        "Display_Counter_Temp_C": 2.021697890280984
+    }
+]
